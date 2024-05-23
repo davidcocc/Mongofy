@@ -40,38 +40,42 @@ def insert_data_to_collection(collection, data):
         print(f"Errore durante l'inserimento dei dati: {e}")
         return None
 
-# Carica i dati dal CSV
-csv_file_path = 'musicData.csv'
-df = load_csv(csv_file_path)
 
-if df is not None:
-    # Estrai e processa i generi
-    genres_set = set()
-    for genres in df['Genres']:
-        genres_list = ast.literal_eval(genres)
-        genres_set.update(genres_list)
 
-    genres_list = list(genres_set)
-    genres_data = [{'genre': genre} for genre in genres_list]
+def database_connection():
+    # Carica i dati dal CSV
+    csv_file_path = 'musicData.csv'
+    df = load_csv(csv_file_path)
+    if df is not None:
+        # Estrai e processa i generi
+        genres_set = set()
+        for genres in df['Genres']:
+            genres_list = ast.literal_eval(genres)
+            genres_set.update(genres_list)
 
-    # Connessione a MongoDB
-    uri = 'mongodb://localhost:27017/'
-    db_name = 'Mongofy'
-    songs_collection_name = 'songs'
-    genres_collection_name = 'genres'
+        genres_list = list(genres_set)
+        genres_data = [{'genre': genre} for genre in genres_list]
 
-    genres_collection = connect_to_mongo(uri, db_name, genres_collection_name)
-    if genres_collection is not None:
-        genre_ids = insert_data_to_collection(genres_collection, genres_data)
-        genre_map = {genre['genre']: genre_id for genre, genre_id in zip(genres_data, genre_ids)}
+        # Connessione a MongoDB
+        uri = 'mongodb://localhost:27017/'
+        db_name = 'Mongofy'
+        songs_collection_name = 'songs'
+        genres_collection_name = 'genres'
 
-        # Modifica i documenti delle canzoni per includere i riferimenti ai generi
-        df['Genres'] = df['Genres'].apply(lambda x: [genre_map[genre] for genre in ast.literal_eval(x)])
-        data_dict = df.to_dict(orient='records')
+        genres_collection = connect_to_mongo(uri, db_name, genres_collection_name)
+        if genres_collection is not None:
+            genre_ids = insert_data_to_collection(genres_collection, genres_data)
+            genre_map = {genre['genre']: genre_id for genre, genre_id in zip(genres_data, genre_ids)}
 
-        # Inserisci i dati delle canzoni nella collection
-        songs_collection = connect_to_mongo(uri, db_name, songs_collection_name)
-        if songs_collection is not None:
-            insert_data_to_collection(songs_collection, data_dict)
-else:
-    print("Impossibile procedere senza i dati CSV.")
+            # Modifica i documenti delle canzoni per includere i riferimenti ai generi
+            df['Genres'] = df['Genres'].apply(lambda x: [genre_map[genre] for genre in ast.literal_eval(x)])
+            data_dict = df.to_dict(orient='records')
+
+            # Inserisci i dati delle canzoni nella collection
+            songs_collection = connect_to_mongo(uri, db_name, songs_collection_name)
+            if songs_collection is not None:
+                insert_data_to_collection(songs_collection, data_dict)
+        
+        return songs_collection
+    else:
+        return None

@@ -1,5 +1,6 @@
 from flask import render_template, jsonify, Blueprint
 from pymongo import MongoClient
+from mongoConnection import database_connection
 
 app_bp = Blueprint('app', __name__)
 
@@ -10,6 +11,7 @@ songs_collection = db.songs
 
 @app_bp.route('/')
 def index():
+    #collection = database_connection()
     return render_template('index.html')
 
 @app_bp.route('/api/songs')
