@@ -1,17 +1,77 @@
 import pandas as pd
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
+import ast
 
-df = pd.read_csv('musicData.csv')
-data_dict = df.to_dict(orient='records')
-print("CSV letto!")
-print(data_dict[:2])
+def connect_to_mongo(uri, db_name, collection_name):
+    try:
+        client = MongoClient(uri)
+        print("Connessione a MongoDB effettuata!")
+        db = client[db_name]
+        collection = db[collection_name]
+        return collection
+    except errors.ConnectionError as e:
+        print(f"Errore di connessione a MongoDB: {e}")
+        return None
+    except errors.ConfigurationError as e:
+        print(f"Errore di configurazione: {e}")
+        return None
 
-client = MongoClient('mongodb://localhost:27017/')
-print("Connessione effettuata!")
+def load_csv(file_path):
+    try:
+        df = pd.read_csv(file_path)
+        print("CSV letto con successo!")
+        return df
+    except FileNotFoundError:
+        print("Errore: File CSV non trovato!")
+        return None
+    except pd.errors.EmptyDataError:
+        print("Errore: File CSV vuoto!")
+        return None
+    except pd.errors.ParserError:
+        print("Errore di parsing del CSV!")
+        return None
 
-db = client['Mongofy']
-collection = db['songs']
+def insert_data_to_collection(collection, data):
+    try:
+        result = collection.insert_many(data)
+        print("Dati inseriti con successo nella collection!")
+        return result.inserted_ids
+    except errors.BulkWriteError as e:
+        print(f"Errore durante l'inserimento dei dati: {e}")
+        return None
 
-collection.insert_many(data_dict)
+# Carica i dati dal CSV
+csv_file_path = 'musicData.csv'
+df = load_csv(csv_file_path)
 
-print("Dati inseriti con successo nella collection 'songs' nel database 'Mongofy'! Daje Roma, daje!")
+if df is not None:
+    # Estrai e processa i generi
+    genres_set = set()
+    for genres in df['Genres']:
+        genres_list = ast.literal_eval(genres)
+        genres_set.update(genres_list)
+
+    genres_list = list(genres_set)
+    genres_data = [{'genre': genre} for genre in genres_list]
+
+    # Connessione a MongoDB
+    uri = 'mongodb://localhost:27017/'
+    db_name = 'Mongofy'
+    songs_collection_name = 'songs'
+    genres_collection_name = 'genres'
+
+    genres_collection = connect_to_mongo(uri, db_name, genres_collection_name)
+    if genres_collection is not None:
+        genre_ids = insert_data_to_collection(genres_collection, genres_data)
+        genre_map = {genre['genre']: genre_id for genre, genre_id in zip(genres_data, genre_ids)}
+
+        # Modifica i documenti delle canzoni per includere i riferimenti ai generi
+        df['Genres'] = df['Genres'].apply(lambda x: [genre_map[genre] for genre in ast.literal_eval(x)])
+        data_dict = df.to_dict(orient='records')
+
+        # Inserisci i dati delle canzoni nella collection
+        songs_collection = connect_to_mongo(uri, db_name, songs_collection_name)
+        if songs_collection is not None:
+            insert_data_to_collection(songs_collection, data_dict)
+else:
+    print("Impossibile procedere senza i dati CSV.")
