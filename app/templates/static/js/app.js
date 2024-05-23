@@ -5,7 +5,7 @@ angular.module('mongofyApp', [])
         $scope.currentSort = 'Track Name';
         $scope.reverseSort = false;
 
-        $http.get('/api/songs').then(function(response) {
+        $http.get('/').then(function(response) {
             $scope.songs = response.data;
         });
 
