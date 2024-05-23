@@ -3,32 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>Mongofy</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="/static/js/app.js"></script>
-    <link rel="stylesheet" href="/static/css/styles.css">  
-    
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            white-space: nowrap; /* Mantiene il testo su una sola riga */
+        }
+        th {
+            cursor: pointer;
+        }
+        th.sortable:after {
+            content: ' \25B2'; /* Freccia su */
+            visibility: hidden;
+        }
+        th.sortable.asc:after {
+            visibility: visible;
+            content: ' \25B2'; /* Freccia su */
+        }
+        th.sortable.desc:after {
+            visibility: visible;
+            content: ' \25BC'; /* Freccia giù */
+        }
+        /* Fissare larghezza colonne */
+        th, td {
+            width: 200px; /* Imposta una larghezza fissa per le colonne */
+        }
+    </style>
 </head>
 <body ng-controller="MainController" ng-class="{'dark-mode': darkMode}">
     <header>
         <h1>Mongofy</h1>
         <button ng-click="toggleTheme()">
-            <span ng-if="!darkMode">&#9728; Light Mode</span>
-            <span ng-if="darkMode">&#9790; Dark Mode</span>
+            <span ng-if="!darkMode">&#9790;</span>
+            <span ng-if="darkMode">&#9728;</span>
         </button>
     </header>
     <main>
         <table>
             <thead>
                 <tr>
-                    <th ng-click="sortColumn('Track Name')">Titolo</th>
-                    <th ng-click="sortColumn('Artist Name')">Artista</th>
-                    <th ng-click="sortColumn('Genres')">Generi</th>
-                    <th ng-click="sortColumn('duration_ms')">Durata</th>
+                    <th ng-click="sortColumn('TrackName')" class="sortable" ng-class="{'asc': currentSort === 'TrackName' && !reverseSort, 'desc': currentSort === 'TrackName' && reverseSort}">Titolo</th>
+                    <th ng-click="sortColumn('ArtistName')" class="sortable" ng-class="{'asc': currentSort === 'ArtistName' && !reverseSort, 'desc': currentSort === 'ArtistName' && reverseSort}">Artista</th>
+                    <th ng-click="sortColumn('Genres')" class="sortable" ng-class="{'asc': currentSort === 'Genres' && !reverseSort, 'desc': currentSort === 'Genres' && reverseSort}">Generi</th>
+                    <th ng-click="sortColumn('duration_ms')" class="sortable" ng-class="{'asc': currentSort === 'duration_ms' && !reverseSort, 'desc': currentSort === 'duration_ms' && reverseSort}">Durata</th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="song in songs | orderBy:currentSort:reverseSort | limitTo:(currentPage + 1) * 20">
-                    <td ng-bind="song['Track Name']"></td>
-                    <td ng-bind="song['Artist Name']"></td>
+                <tr ng-repeat="song in songs | orderBy:currentSort:reverseSort | limitTo:20:(currentPage * 20)">
+                    <td ng-bind="song['TrackName']"></td>
+                    <td ng-bind="song['ArtistName']"></td>
                     <td ng-bind="song.Genres.join(', ')"></td>
                     <td ng-bind="formatDuration(song.duration_ms)"></td>
                 </tr>
@@ -40,7 +71,5 @@
             <button ng-disabled="(currentPage + 1) * 20 >= songs.length" ng-click="nextPage()">Next</button>
         </div>
     </main>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
