@@ -8,5 +8,5 @@ columns_to_drop = ["Playlist", "key", "mode", "liveness", "index", "Unnamed: 0",
 df = df.drop(columns=columns_to_drop)
 col_id = df.pop('id')
 df.insert(0, '_id', col_id)
-df.to_csv("musicData.csv")
+df.to_csv("musicData.csv", index=False)
 
