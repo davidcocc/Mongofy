@@ -1,6 +1,7 @@
 from flask import render_template, jsonify, Blueprint
 from pymongo import MongoClient
 from bson import ObjectId
+from mongoConnection import database_connection
 
 app_bp = Blueprint('app', __name__)
 
@@ -21,8 +22,10 @@ def convert_objectid_to_str(document):
         document = str(document)
     return document
 
+
 @app_bp.route('/')
 def index():
+    database_connection()
     return render_template('index.html')
 
 @app_bp.route('/api/songs')

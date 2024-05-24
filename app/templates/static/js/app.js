@@ -6,6 +6,7 @@ angular.module('mongofyApp', [])
         $scope.reverseSort = false;
         $scope.searchType = 'genre';
         $scope.searchQuery = '';
+        $scope.itemsPerPage = 20; // Numero di elementi per pagina
 
         // Funzione per caricare i generi e mapparli ai brani
         function loadGenres() {
@@ -63,7 +64,6 @@ angular.module('mongofyApp', [])
                 document.body.classList.remove('dark-mode');
             }
         };
-        
 
         // Funzione per ordinare la colonna
         $scope.sortColumn = function(column) {
@@ -76,7 +76,7 @@ angular.module('mongofyApp', [])
         };
 
         $scope.nextPage = function() {
-            if (($scope.currentPage + 1) * 20 < $scope.songs.length) {
+            if (($scope.currentPage + 1) * $scope.itemsPerPage < $scope.songs.length) {
                 $scope.currentPage++;
             }
         };
@@ -87,9 +87,34 @@ angular.module('mongofyApp', [])
             }
         };
 
+        $scope.setPage = function(page) {
+            $scope.currentPage = page;
+        };
+
+        $scope.getPages = function() {
+            var totalPages = Math.ceil($scope.songs.length / $scope.itemsPerPage);
+            var pages = [];
+            var startPage = Math.max($scope.currentPage - 2, 0);
+            var endPage = Math.min(startPage + 5, totalPages);
+
+            for (var i = startPage; i < endPage; i++) {
+                pages.push(i);
+            }
+
+            return pages;
+        };
+
         $scope.formatDuration = function(ms) {
             var minutes = Math.floor(ms / 60000);
             var seconds = ((ms % 60000) / 1000).toFixed(0);
             return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+        };
+
+        $scope.firstPage = function() {
+            $scope.currentPage = 0;
+        };
+
+        $scope.lastPage = function() {
+            $scope.currentPage = Math.ceil($scope.songs.length / $scope.itemsPerPage) - 1;
         };
     }]);
