@@ -1,9 +1,11 @@
 angular.module('mongofyApp', [])
-    .controller('MainController', ['$scope', '$http', function($scope, $http) {
+    .controller('MainController', ['$scope', '$http', '$document', function($scope, $http, $document) {
         $scope.darkMode = false;
         $scope.currentPage = 0;
-        $scope.currentSort = 'genre';
+        $scope.currentSort = 'TrackName';
         $scope.reverseSort = false;
+        $scope.searchType = 'genre';
+        $scope.searchQuery = '';
 
         // Funzione per caricare i generi e mapparli ai brani
         function loadGenres() {
@@ -25,6 +27,28 @@ angular.module('mongofyApp', [])
             });
         }
 
+        $scope.handleKeyPress = function(event) {
+            if (event.keyCode === 13) { // Verifica se è stato premuto il tasto Invio (codice 13)
+                $scope.searchSongs(); // Chiama la funzione di ricerca
+            }
+        };
+
+        // Funzione per cercare i brani
+        $scope.searchSongs = function() {
+            let searchUrl;
+            if ($scope.searchType === 'genre') {
+                searchUrl = `/api/songs/genre/${$scope.searchQuery}`;
+            } else if ($scope.searchType === 'title') {
+                searchUrl = `/api/songs/title/${$scope.searchQuery}`;
+            } else if ($scope.searchType === 'artist') {
+                searchUrl = `/api/songs/artist/${$scope.searchQuery}`;
+            }
+            $http.get(searchUrl).then(function(response) {
+                $scope.songs = response.data;
+                loadGenres();
+            });
+        };
+
         // Caricamento iniziale dei brani e dei generi
         $http.get('/api/songs').then(function(response) {
             $scope.songs = response.data;
@@ -33,7 +57,13 @@ angular.module('mongofyApp', [])
 
         $scope.toggleTheme = function() {
             $scope.darkMode = !$scope.darkMode;
+            if ($scope.darkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
         };
+        
 
         // Funzione per ordinare la colonna
         $scope.sortColumn = function(column) {

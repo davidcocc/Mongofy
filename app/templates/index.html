@@ -3,72 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <title>Mongofy</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="/static/js/app.js"></script>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            white-space: nowrap; /* Mantiene il testo su una sola riga */
-        }
-        th {
-            cursor: pointer;
-        }
-        th.sortable:after {
-            content: ' \25B2'; /* Freccia su */
-            visibility: hidden;
-        }
-        th.sortable.asc:after {
-            visibility: visible;
-            content: ' \25B2'; /* Freccia su */
-        }
-        th.sortable.desc:after {
-            visibility: visible;
-            content: ' \25BC'; /* Freccia giù */
-        }
-        /* Fissare larghezza colonne */
-        th, td {
-            width: 200px; /* Imposta una larghezza fissa per le colonne */
-        }
-    </style>
+    <link href="/static/css/styles.css" rel="stylesheet"> 
 </head>
-<body ng-controller="MainController" ng-class="{'dark-mode': darkMode}">
-    <header>
-        <h1>Mongofy</h1>
-        <button ng-click="toggleTheme()">
-            <span ng-if="!darkMode">&#9790;</span>
-            <span ng-if="darkMode">&#9728;</span>
-        </button>
+<body ng-controller="MainController" ng-class="{ 'dark-mode': darkMode }">
+
+    <header class="flex justify-between items-center mb-4 bg-green-500 text-white p-4 rounded" ng-click="reloadPage()">
+        <h1 class="text-3xl cursor-pointer" onclick="window.location.reload()">Mongofy</h1>
+
+
+        <div class="flex items-center">
+            <select ng-model="searchType" class="form-control inline-block w-auto rounded p-2 mr-2">
+                <option value="genre">Genere</option>
+                <option value="title">Titolo</option>
+                <option value="artist">Artista</option>
+            </select>
+            <input type="text" ng-model="searchQuery" class="form-control inline-block w-auto rounded p-2 mr-2 search-bar" placeholder="Cerca..." ng-keypress="handleKeyPress($event)">
+
+            <button ng-click="searchSongs()" class="btn text-white p-2 rounded mr-2">Cerca</button>
+            <button ng-click="toggleTheme()" class="btn text-white p-2 rounded">
+                <span ng-if="!darkMode">&#9790;</span>
+                <span ng-if="darkMode">&#9728;</span>
+            </button>
+        </div>
     </header>
     <main>
-        <table>
+        <table class="table-auto w-full bg-white shadow-md rounded">
             <thead>
-                <tr>
-                    <th ng-click="sortColumn('TrackName')" class="sortable" ng-class="{'asc': currentSort === 'TrackName' && !reverseSort, 'desc': currentSort === 'TrackName' && reverseSort}">Titolo</th>
-                    <th ng-click="sortColumn('ArtistName')" class="sortable" ng-class="{'asc': currentSort === 'ArtistName' && !reverseSort, 'desc': currentSort === 'ArtistName' && reverseSort}">Artista</th>
-                    <th ng-click="sortColumn('Genres')" class="sortable" ng-class="{'asc': currentSort === 'Genres' && !reverseSort, 'desc': currentSort === 'Genres' && reverseSort}">Generi</th>
-                    <th ng-click="sortColumn('duration_ms')" class="sortable" ng-class="{'asc': currentSort === 'duration_ms' && !reverseSort, 'desc': currentSort === 'duration_ms' && reverseSort}">Durata</th>
+                <tr class="bg-gray-200">
+                    <th ng-click="sortColumn('TrackName')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'TrackName' && !reverseSort, 'desc': currentSort === 'TrackName' && reverseSort}">Titolo</th>
+                    <th ng-click="sortColumn('ArtistName')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'ArtistName' && !reverseSort, 'desc': currentSort === 'ArtistName' && reverseSort}">Artista</th>
+                    <th ng-click="sortColumn('Genres')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'Genres' && !reverseSort, 'desc': currentSort === 'Genres' && reverseSort}">Generi</th>
+                    <th ng-click="sortColumn('duration_ms')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'duration_ms' && !reverseSort, 'desc': currentSort === 'duration_ms' && reverseSort}">Durata</th>
+                    <th ng-click="sortColumn('Popularity')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'Popularity' && !reverseSort, 'desc': currentSort === 'Popularity' && reverseSort}">Popolarità</th>
+                    <th ng-click="sortColumn('danceability')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'danceability' && !reverseSort, 'desc': currentSort === 'danceability' && reverseSort}">Ballabilità</th>
+                    <th ng-click="sortColumn('energy')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'energy' && !reverseSort, 'desc': currentSort === 'energy' && reverseSort}">Energia</th>
+                    <th ng-click="sortColumn('speechiness')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'speechiness' && !reverseSort, 'desc': currentSort === 'speechiness' && reverseSort}">Speechiness</th>
+                    <th ng-click="sortColumn('instrumentalness')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'instrumentalness' && !reverseSort, 'desc': currentSort === 'instrumentalness' && reverseSort}">Instrumentalità</th>
+                    <th ng-click="sortColumn('valence')" class="sortable p-2 cursor-pointer" ng-class="{'asc': currentSort === 'valence' && !reverseSort, 'desc': currentSort === 'valence' && reverseSort}">Valenza</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="song in songs | orderBy:currentSort:reverseSort | limitTo:20:(currentPage * 20)">
-                    <td ng-bind="song['TrackName']"></td>
-                    <td ng-bind="song['ArtistName']"></td>
-                    <td ng-bind="song.Genres.join(', ')"></td>
-                    <td ng-bind="formatDuration(song.duration_ms)"></td>
+                    <td class="p-2" ng-bind="song['TrackName']"></td>
+                    <td class="p-2" ng-bind="song['ArtistName']"></td>
+                    <td class="p-2" ng-bind="song.Genres.join(', ')"></td>
+                    <td class="p-2" ng-bind="formatDuration(song.duration_ms)"></td>
+                    <td class="p-2">
+                        <div class="relative pt-1">
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-red-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500" ng-style="{'width': song.Popularity + '%'}"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-2">
+                        <div class="relative pt-1">
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-pink-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-pink-500" ng-style="{'width': (song.danceability * 100) + '%'}"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-2">
+                        <div class="relative pt-1">
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-yellow-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-500" ng-style="{'width': (song.energy * 100) + '%'}"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-2">
+                        <div class="relative pt-1">
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-green-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500" ng-style="{'width': (song.speechiness * 100) + '%'}"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-2">
+                        <div class="relative pt-1">
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500" ng-style="{'width': (song.instrumentalness * 100) + '%'}"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-2">
+                        <div class="relative pt-1">
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200">
+                                <div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-500" ng-style="{'width': (song.valence * 100) + '%'}"></div>
+                            </div>
+                        </div>
+                    </td>
+                    
                 </tr>
             </tbody>
         </table>
-        <div class="pagination">
-            <button ng-disabled="currentPage == 0" ng-click="prevPage()">Previous</button>
-            <span ng-bind="'Page ' + (currentPage + 1)"></span>
-            <button ng-disabled="(currentPage + 1) * 20 >= songs.length" ng-click="nextPage()">Next</button>
+        <div class="pagination flex justify-between items-center mt-4">
+            <button class="btn bg-green-500 text-white p-2 rounded" ng-click="prevPage()">Precedente</button>
+            <div class="flex items-center">
+                <span>Page:</span>
+                <select ng-model="currentPage" ng-options="n for n in [] | range:totalPages" class="ml-2 p-2 rounded">
+                </select>
+            </div>
+            <button class="btn bg-green-500 text-white p-2 rounded" ng-click="nextPage()">Successivo</button>
         </div>
     </main>
 </body>

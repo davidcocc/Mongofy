@@ -58,18 +58,26 @@ th {
 }
 
 .dark-mode {
-    background-color: #121212;
-    color: #e0e0e0;
-}
-
-.dark-mode header {
-    background-color: #535353;
+    background-color: #121212 !important;
+    color: #1b1b1b !important;
 }
 
 .dark-mode table {
-    color: #e0e0e0;
+    color: #1b1b1b !important;
 }
 
 .dark-mode th, .dark-mode td {
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #444 !important;
+    background-color: #1b1b1b;
+    color: #f1f1f1
 }
+
+select, option {
+    color: black;
+}
+
+.search-bar {
+    color: black;
+}
+
+
