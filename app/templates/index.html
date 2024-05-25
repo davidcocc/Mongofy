@@ -5,14 +5,13 @@
     <title>Mongofy</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script src="/static/js/app.js"></script>
-    <link href="/static/css/styles.css" rel="stylesheet"> 
+    <link href="/static/css/styles.css" rel="stylesheet">
 </head>
 <body ng-controller="MainController" ng-class="{ 'dark-mode': darkMode }">
-
     <header class="flex justify-between items-center mb-4 bg-green-500 text-white p-4 rounded" ng-click="reloadPage()">
         <h1 class="text-3xl cursor-pointer" onclick="window.location.reload()">Mongofy</h1>
-
         <div class="flex items-center">
             <select ng-model="searchType" class="form-control inline-block w-auto rounded p-2 mr-2">
                 <option value="genre">Genere</option>
@@ -20,7 +19,6 @@
                 <option value="artist">Artista</option>
             </select>
             <input type="text" ng-model="searchQuery" class="form-control inline-block w-auto rounded p-2 mr-2 search-bar" placeholder="Cerca..." ng-keypress="handleKeyPress($event)">
-
             <button ng-click="searchSongs()" class="btn text-white p-2 rounded mr-2">Cerca</button>
             <button ng-click="toggleTheme()" class="btn text-white p-2 rounded">
                 <span ng-if="!darkMode">&#9790;</span>
@@ -46,7 +44,9 @@
             </thead>
             <tbody>
                 <tr ng-repeat="song in songs | orderBy:currentSort:reverseSort | limitTo:20:(currentPage * 20)">
-                    <td class="p-2" ng-bind="song['TrackName']"></td>
+                    <td class="p-2">
+                        <a href="#" ng-click="openPopup(song)" class="track-title">{{song['TrackName']}}</a>
+                    </td>
                     <td class="p-2" ng-bind="song['ArtistName']"></td>
                     <td class="p-2" ng-bind="song.Genres.join(', ')"></td>
                     <td class="p-2" ng-bind="formatDuration(song.duration_ms)"></td>
@@ -103,18 +103,41 @@
                         ng-repeat="page in getPages()"
                         ng-click="setPage(page)"
                         ng-class="{
-                            'bg-green-500 text-white': page === currentPage,
-                            'bg-gray-800 text-gray-300': darkMode && page !== currentPage,
-                            'bg-white text-black': !darkMode && page !== currentPage
-                        }">
-                    {{ page + 1 }}
-                </button>
+                            'bg-green-500 text-white': currentPage === page,
+                            'bg-gray-200': currentPage !== page
+                        }">{{ page + 1 }}</button>
             </div>
-            <button class="btn bg-green-500 text-white p-2 rounded" ng-click="nextPage()">Successivo</button>
+            <button class="btn bg-green-500 text-white p-2 rounded" ng-click="nextPage()">Successiva</button>
             <button class="btn bg-green-500 text-white p-2 rounded" ng-click="lastPage()">Ultima pagina</button>
         </div>
     </main>
+
+    <div id="songModal" class="modal" ng-show="isModalOpen">
+        <div class="modal-content">
+            <span class="close" ng-click="closeModal()">&times;</span>
+            <div class="modal-body">
+                <div class="album-cover-container">
+                    <img ng-src="{{selectedSong.albumCover}}" alt="Album Cover" class="album-cover">
+                </div>
+                <div class="song-details">
+                    <h2><a href="#" ng-click="openPopup(song)" class="track-title">{{selectedSong.TrackName}}</a></h2>
+                    <p><strong>Artista:</strong> {{selectedSong.ArtistName}}</p>
+                    <p><strong>Generi:</strong> {{selectedSong.Genres.join(', ')}}</p>
+                    <p><strong>Durata:</strong> {{formatDuration(selectedSong.duration_ms)}}</p>
+                    <div class="progress-bar-container" ng-repeat="(key, value) in songAttributes">
+                        <div class="progress-bar-label">{{ key }}</div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" ng-style="{'background-color': getColor(key), 'width': (value * 100) + '%'}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-heart" ng-click="toggleFavorite(selectedSong)"><i class="fa fa-heart"></i></button>
+                <button class="btn btn-play"><i class="fa fa-play"></i></button>
+            </div>
+        </div>
+    </div>
+    
 </body>
 </html>
-
-

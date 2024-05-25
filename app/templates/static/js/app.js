@@ -7,6 +7,29 @@ angular.module('mongofyApp', [])
         $scope.searchType = 'genre';
         $scope.searchQuery = '';
         $scope.itemsPerPage = 20; // Numero di elementi per pagina
+        $scope.isModalOpen = false;
+        $scope.selectedSong = {};
+        $scope.songAttributes = {
+        "Popolarità": 0,
+        "Ballabilità": 0,
+        "Energia": 0,
+        "Speechiness": 0,
+        "Instrumentalità": 0,
+        "Valenza": 0 };
+
+        $scope.colors = {
+            "Popolarità": "#FF0000",
+            "Ballabilità": "#FF69B4",
+            "Energia": "#FFFF00",
+            "Speechiness": "#32CD32",
+            "Instrumentalità": "#0000FF",
+            "Valenza": "#4B0082"
+        };
+
+        $scope.getColor = function(key) {
+            return $scope.colors[key] || '#000';
+        };
+    
 
         // Funzione per caricare i generi e mapparli ai brani
         function loadGenres() {
@@ -117,4 +140,31 @@ angular.module('mongofyApp', [])
         $scope.lastPage = function() {
             $scope.currentPage = Math.ceil($scope.songs.length / $scope.itemsPerPage) - 1;
         };
+
+        $scope.openPopup = function(song) {
+            $scope.selectedSong = song;
+            $scope.songAttributes.Popolarità = song.Popularity / 100;
+            $scope.songAttributes.Ballabilità = song.danceability;
+            $scope.songAttributes.Energia = song.energy;
+            $scope.songAttributes.Speechiness = song.speechiness;
+            $scope.songAttributes.Instrumentalità = song.instrumentalness;
+            $scope.songAttributes.Valenza = song.valence;
+            $scope.isModalOpen = true;
+        };
+    
+        $scope.closeModal = function() {
+            $scope.isModalOpen = false;
+        };
+    
+        $scope.toggleFavorite = function(song) {
+            song.isFavorite = !song.isFavorite;
+            // Aggiungi logica per gestire i preferiti (salvare nel database, ecc.)
+        };
+    
+        $scope.formatDuration = function(duration_ms) {
+            var minutes = Math.floor(duration_ms / 60000);
+            var seconds = ((duration_ms % 60000) / 1000).toFixed(0);
+            return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+        };
     }]);
+
