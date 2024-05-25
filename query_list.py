@@ -27,10 +27,10 @@ class SongRepository:
         return list(self.songs_collection.find({"ArtistName": {"$regex": artist_name, "$options": "i"}}))
 
     def find_songs_by_genre(self, genre_name):
-        genre = self.genres_collection.find_one({"genre": {"$regex": genre_name, "$options": "i"}})
-        if genre:
-            genre_id = genre['_id']
-            return list(self.songs_collection.find({"Genres": genre_id}))
+        matching_genres = self.genres_collection.find({"genre": {"$regex": genre_name, "$options": "i"}})
+        genre_ids = [genre['_id'] for genre in matching_genres]
+        if genre_ids:
+            return list(self.songs_collection.find({"Genres": {"$in": genre_ids}}))
         return []
     
 
