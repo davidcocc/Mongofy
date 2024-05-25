@@ -1,4 +1,10 @@
 angular.module('mongofyApp', [])
+
+
+
+    
+
+
     .controller('MainController', ['$scope', '$http', '$document', function($scope, $http, $document) {
         $scope.darkMode = false;
         $scope.currentPage = 0;

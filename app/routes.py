@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 from mongoConnection import database_connection
 from query_list import MongoDBClient, SongRepository
+from spotipy import SpotifyOAuth, Spotify
 
 app_bp = Blueprint('app', __name__)
 
@@ -12,6 +13,10 @@ db = client.Mongofy
 
 db_client = MongoDBClient()
 song_repo = SongRepository(db_client)
+
+
+
+
 
 def convert_objectid_to_str(document):
     if isinstance(document, dict):
@@ -26,6 +31,8 @@ def convert_objectid_to_str(document):
         document = str(document)
     return document
 
+
+    
 
 @app_bp.route('/')
 def index():

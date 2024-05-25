@@ -2,6 +2,8 @@ import pandas as pd
 from pymongo import MongoClient, errors
 import ast
 
+
+
 def connect_to_mongo(uri, db_name, collection_name):
     try:
         client = MongoClient(uri)
@@ -46,7 +48,7 @@ def is_collection_empty(collection):
 
 def database_connection():
     # Carica i dati dal CSV
-    csv_file_path = 'musicData.csv'
+    csv_file_path = 'musicData_with_covers.csv'
     df = load_csv(csv_file_path)
     if df is not None:
         # Connessione a MongoDB

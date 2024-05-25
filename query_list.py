@@ -17,7 +17,7 @@ class SongRepository:
         return list(self.songs_collection.find({}, {
         "_id": 1, "ArtistName": 1, "TrackName": 1, "Popularity": 1, "Genres": 1,
         "danceability": 1, "energy": 1, "speechiness": 1, "instrumentalness": 1,
-        "valence": 1, "duration_ms": 1
+        "valence": 1, "duration_ms": 1, "album_cover_url": 1
         }))
         
     def find_genres(self):
