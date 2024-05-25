@@ -2,12 +2,16 @@ from flask import render_template, jsonify, Blueprint
 from pymongo import MongoClient
 from bson import ObjectId
 from mongoConnection import database_connection
+from query_list import MongoDBClient, SongRepository
 
 app_bp = Blueprint('app', __name__)
 
 # Connessione a MongoDB usando il database 'Mongofy'
 client = MongoClient('mongodb://localhost:27017/')
 db = client.Mongofy
+
+db_client = MongoDBClient()
+song_repo = SongRepository(db_client)
 
 def convert_objectid_to_str(document):
     if isinstance(document, dict):
@@ -28,51 +32,44 @@ def index():
     database_connection()
     return render_template('index.html')
 
+
 @app_bp.route('/api/songs')
 def get_songs():
-    songs_collection = db.songs
-    songs = list(songs_collection.find({}, {
-        "_id": 1, "ArtistName": 1, "TrackName": 1, "Popularity": 1, "Genres": 1,
-        "danceability": 1, "energy": 1, "speechiness": 1, "instrumentalness": 1,
-        "valence": 1, "duration_ms": 1
-    }))
+    songs = song_repo.find_songs()
     for song in songs:
         song = convert_objectid_to_str(song)
     return jsonify(songs)
 
+
 @app_bp.route('/api/genres')
 def get_genres():
-    genres_collection = db.genres
-    genres = list(genres_collection.find({}, {"_id": 1, "genre": 1}))
+    genres = song_repo.find_genres()
     for genre in genres:
         genre = convert_objectid_to_str(genre)
     return jsonify(genres)
 
+
 @app_bp.route('/api/songs/genre/<genre_name>')
 def get_songs_by_genre(genre_name):
-    genres_collection = db.genres
-    songs_collection = db.songs
-    genre = genres_collection.find_one({"genre": genre_name})
-    if genre:
-        genre_id = genre['_id']
-        songs = list(songs_collection.find({"Genres": genre_id}))
-        for song in songs:
-            song = convert_objectid_to_str(song)
-        return jsonify(songs)
-    return jsonify([])
+    songs = song_repo.find_songs_by_genre(genre_name)
+    for song in songs:
+        song = convert_objectid_to_str(song)
+    return jsonify(songs)
+
 
 @app_bp.route('/api/songs/title/<track_name>')
 def get_songs_by_title(track_name):
-    songs_collection = db.songs
-    songs = list(songs_collection.find({"TrackName": track_name}))
+    songs = song_repo.find_songs_by_title(track_name)
     for song in songs:
         song = convert_objectid_to_str(song)
     return jsonify(songs)
 
+
 @app_bp.route('/api/songs/artist/<artist_name>')
 def get_songs_by_artist(artist_name):
-    songs_collection = db.songs
-    songs = list(songs_collection.find({"ArtistName": artist_name}))
+    songs = song_repo.find_songs_by_artist(artist_name)
     for song in songs:
         song = convert_objectid_to_str(song)
     return jsonify(songs)
+
+

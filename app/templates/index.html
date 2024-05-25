@@ -99,7 +99,14 @@
             <button class="btn bg-green-500 text-white p-2 rounded" ng-click="firstPage()">Prima pagina</button>
             <button class="btn bg-green-500 text-white p-2 rounded" ng-click="prevPage()">Precedente</button>
             <div class="flex items-center space-x-2">
-                <button class="btn p-2 rounded" ng-repeat="page in getPages()" ng-click="setPage(page)" ng-class="{'bg-green-500 text-white': page === currentPage}">
+                <button class="btn p-2 rounded"
+                        ng-repeat="page in getPages()"
+                        ng-click="setPage(page)"
+                        ng-class="{
+                            'bg-green-500 text-white': page === currentPage,
+                            'bg-gray-800 text-gray-300': darkMode && page !== currentPage,
+                            'bg-white text-black': !darkMode && page !== currentPage
+                        }">
                     {{ page + 1 }}
                 </button>
             </div>
