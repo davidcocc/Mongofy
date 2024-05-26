@@ -21,12 +21,12 @@ angular.module('mongofyApp', [])
         "Valenza": 0 };
 
         $scope.colors = {
-            "Popolarità": "#FF0000",
-            "Ballabilità": "#FF69B4",
-            "Energia": "#FFFF00",
-            "Speechiness": "#32CD32",
-            "Instrumentalità": "#0000FF",
-            "Valenza": "#4B0082"
+            "Popolarità": "#EF4444",
+            "Ballabilità": "#EC4899",
+            "Energia": "#EAB308",
+            "Speechiness": "#22C55E",
+            "Instrumentalità": "#3B82F6",
+            "Valenza": "#A855F7"
         };
 
         $scope.getColor = function(key) {
@@ -170,7 +170,21 @@ angular.module('mongofyApp', [])
             return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
         };
 
-
+        $scope.addNew = function() {
+            console.log("Add new item");
+        };
+    
+        $scope.openMenu = function() {
+            console.log("Query menu");
+        };
+    
+        $scope.deleteSong = function(song) {
+            console.log("Delete song", song);
+        };
+    
+        $scope.editSong = function(song) {
+            console.log("Edit song", song);
+        };
 
         $scope.likeSong = function(song) {
             $http.post('/like_song', { song_id: song._id })

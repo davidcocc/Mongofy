@@ -28,6 +28,14 @@
         </div>
     </header>
     <main>
+        <div class="flex justify-end mb-4">
+            <button ng-click="addNew()" class="btn text-white p-2 rounded bg-green-500 mr-2">
+                <i class="fa fa-plus"></i>
+            </button>
+            <button ng-click="openMenu()" class="btn text-white p-2 rounded bg-green-500">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
         <table class="table-auto w-full bg-white shadow-md rounded">
             <thead>
                 <tr class="bg-gray-200">
@@ -136,6 +144,8 @@
             <div class="modal-buttons">
                 <button class="btn btn-heart" ng-click="likeSong(selectedSong)"><i class="fa fa-heart"></i></button>
                 <button class="btn btn-play" ng-click="playSong(selectedSong)"><i class="fa fa-play"></i></button>
+                <button class="btn btn-trash" ng-click="deleteSong(selectedSong)"><i class="fa fa-trash"></i></button>
+                <button class="btn btn-edit" ng-click="editSong(selectedSong)"><i class="fa fa-edit"></i></button>
             </div>
         </div>
     </div>
