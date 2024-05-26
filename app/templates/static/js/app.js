@@ -32,6 +32,70 @@ angular.module('mongofyApp', [])
         $scope.getColor = function(key) {
             return $scope.colors[key] || '#000';
         };
+
+
+        // Menu visibility
+        $scope.menuVisible = false;
+
+        $scope.toggleMenu = function() {
+            $scope.menuVisible = !$scope.menuVisible;
+        };
+
+        $scope.runQuery = function(queryType) {
+            let queryUrl;
+            switch (queryType) {
+                case 'mostDance':
+                    queryUrl = '/api/songs/most_dance';
+                    break;
+                case 'lessDance':
+                    queryUrl = '/api/songs/less_dance';
+                    break;
+                case 'mostPopolarity':
+                    queryUrl = '/api/songs/most_popularity';
+                    break;
+                case 'lessPopolarity':
+                    queryUrl = '/api/songs/less_popularity'
+                    break;
+                case 'mostEnergy':
+                    queryUrl = '/api/songs/most_energy'
+                    break;
+                case 'lessEnergy':
+                    queryUrl = '/api/songs/less_energy'
+                    break;
+                case 'mostSpeechiness':
+                    queryUrl = '/api/songs/most_speechiness'
+                    break;
+                case 'lessSpeechiness':
+                    queryUrl = '/api/songs/less_speechiness'
+                    break;
+                case 'mostInstrumentalness':
+                    queryUrl = '/api/songs/most_instrumentalness'
+                    break;
+                case 'lessInstrumentalness':
+                    queryUrl = '/api/songs/less_instrumentalness'
+                    break;
+                case 'mostValence':
+                    queryUrl = '/api/songs/most_valence'
+                    break;
+                case 'lessValence':
+                    queryUrl = '/api/songs/less_valence'
+                    break;
+                case 'speranza':
+                    queryUrl = '/api/songs/find_speranza'
+                    break;
+                case 'italian':
+                    queryUrl = '/api/songs/find_italian'
+                    break;
+                default:
+                    return;
+            }
+
+            $http.get(queryUrl).then(function(response) {
+                $scope.songs = response.data;
+                loadGenres();
+                $scope.menuVisible = false; // Hide the menu after selection
+            });
+        };
     
 
         // Funzione per caricare i generi e mapparli ai brani
@@ -211,5 +275,15 @@ angular.module('mongofyApp', [])
                     alert('Error playing song: ' + error.data.message);
                 });
         };
+
+
+        $document.on('click', function(event) {
+            var isClickedElementChildOfMenu = angular.element(event.target).closest('.relative').length > 0;
+            if (!isClickedElementChildOfMenu) {
+                $scope.$apply(function() {
+                    $scope.menuVisible = false;
+                });
+            }
+        });
     }]);
 

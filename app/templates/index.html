@@ -32,9 +32,57 @@
             <button ng-click="addNew()" class="btn text-white p-2 rounded bg-green-500 mr-2">
                 <i class="fa fa-plus"></i>
             </button>
-            <button ng-click="openMenu()" class="btn text-white p-2 rounded bg-green-500">
-                <i class="fa fa-bars"></i>
-            </button>
+            <div class="relative">
+                <button ng-click="toggleMenu()" class="btn text-white p-2 rounded bg-green-500">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <div ng-show="menuVisible" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20">
+                    <ul class="py-1">
+                        <li>
+                            <a ng-click="runQuery('mostDance')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Most Danceable</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('lessDance')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Less Danceable</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('mostPopolarity')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Most Popularity</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('lessPopolarity')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Less Popularity</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('mostEnergy')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Most Energy</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('lessEnergy')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Less Energy</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('mostSpeechiness')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Most Speechiness</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('lessSpeechiness')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Less Speechiness</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('mostInstrumentalness')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Most Instrumentalness</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('lessInstrumentalness')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Less Instrumentalness</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('mostValence')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Most Valence</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('lessValence')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Less Valences</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('speranza')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Most Speranza Valence</a>
+                        </li>
+                        <li>
+                            <a ng-click="runQuery('italian')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">Most Italian Instrumentalness </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <table class="table-auto w-full bg-white shadow-md rounded">
             <thead>
