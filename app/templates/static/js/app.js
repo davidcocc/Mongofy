@@ -2,9 +2,6 @@ angular.module('mongofyApp', [])
 
 
 
-    
-
-
     .controller('MainController', ['$scope', '$http', '$document', function($scope, $http, $document) {
         $scope.darkMode = false;
         $scope.currentPage = 0;
@@ -171,6 +168,34 @@ angular.module('mongofyApp', [])
             var minutes = Math.floor(duration_ms / 60000);
             var seconds = ((duration_ms % 60000) / 1000).toFixed(0);
             return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+        };
+
+
+
+        $scope.likeSong = function(song) {
+            $http.post('/like_song', { song_id: song._id })
+                .then(function(response) {
+                    if (response.data.status === 'success') {
+                        alert('Song liked successfully!');
+                    } else {
+                        alert('Error liking song: ' + response.data.message);
+                    }
+                }, function(error) {
+                    alert('Error liking song: ' + error.data.message);
+                });
+        };
+    
+        $scope.playSong = function(song) {
+            $http.post('/play_song', { song_id: song._id })
+                .then(function(response) {
+                    if (response.data.status === 'success') {
+                        alert('Playing song preview!');
+                    } else {
+                        alert('Error playing song: ' + response.data.message);
+                    }
+                }, function(error) {
+                    alert('Error playing song: ' + error.data.message);
+                });
         };
     }]);
 

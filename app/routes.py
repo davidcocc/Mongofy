@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, Blueprint
+from flask import render_template, jsonify, Blueprint, request
 from pymongo import MongoClient
 from bson import ObjectId
 from mongoConnection import database_connection
@@ -14,7 +14,15 @@ db = client.Mongofy
 db_client = MongoDBClient()
 song_repo = SongRepository(db_client)
 
+SPOTIPY_CLIENT_ID = 'b1cc5124d6cb4e43a9bfb6ea1ecd1754'
+SPOTIPY_CLIENT_SECRET = '8b79286098c44475983a2826b18a7003'
+SPOTIPY_REDIRECT_URI = 'http://127.0.0.1:9090/callback'
+SCOPE = "user-library-modify user-library-read"
 
+sp = Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
+                                       client_secret=SPOTIPY_CLIENT_SECRET,
+                                       redirect_uri=SPOTIPY_REDIRECT_URI,
+                                       scope=SCOPE))
 
 
 
@@ -30,6 +38,27 @@ def convert_objectid_to_str(document):
     elif isinstance(document, ObjectId):
         document = str(document)
     return document
+
+
+@app_bp.route('/like_song', methods=['POST'])
+def like_song():
+    data = request.json
+    song_id = data.get('song_id')
+    if song_id:
+        sp.current_user_saved_tracks_add([song_id])
+        return jsonify({'status': 'success', 'message': 'Song liked successfully!'}), 200
+    return jsonify({'status': 'error', 'message': 'Song ID is required'}), 400
+
+@app_bp.route('/play_song', methods=['POST'])
+def play_song():
+    data = request.json
+    song_id = data.get('song_id')
+    if song_id:
+        # Qui si potrebbe riprodurre un estratto usando un web player o un'API di terze parti.
+        return jsonify({'status': 'success', 'message': 'Playing song preview!'}), 200
+    return jsonify({'status': 'error', 'message': 'Song ID is required'}), 400
+
+
 
 
     

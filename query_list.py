@@ -40,14 +40,15 @@ class SongRepository:
     def find_songs_by_duration(self, max_duration):
         return list(self.songs_collection.find({"duration_ms": {"$lt": max_duration}}))
 
-    def sort_songs_by_popularity(self):
-        return list(self.songs_collection.find().sort("Popularity", -1))
-
-    def find_and_sort_songs_by_artist_and_duration(self, artist_name):
-        return list(self.songs_collection.find({"ArtistName": artist_name}).sort("duration_ms", 1))
-
     def find_songs_by_danceability(self, min_danceability):
         return list(self.songs_collection.find({"danceability": {"$gt": min_danceability}}))
+    
+    def find_songs_by_danceability_50(self):
+        return list(self.songs_collection.find({"danceability": {"$gt": 0.50}}))
+    
+    def find_songs_by_artist_and_dance(self, artist_name):
+        return list(self.songs_collection.find({"ArtistName": artist_name}).sort("duration_ms", 1))
 
     def find_songs_by_title(self, track_name):
         return list(self.songs_collection.find({"TrackName": {"$regex": track_name, "$options": "i"}}))
+    
