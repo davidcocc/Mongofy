@@ -91,7 +91,7 @@ class SongRepository:
         return result.modified_count > 0
     
     def delete_song(self, song_id):
-        result = self.songs_collection.delete_one({'_id': ObjectId(song_id)})
+        result = self.songs_collection.delete_one({'_id': song_id})
         return result.deleted_count > 0
     
     def insert_song(self, song_data):

@@ -88,7 +88,7 @@ def update_song(song_id):
         return jsonify({'status': 'error', 'message': 'Failed to update song or song not found'}), 400
     
     
-@app_bp.route('/delete_song/<song_id>', methods=['DELETE'])
+@app_bp.route('/delete_song/<song_id>', methods=['POST'])
 def delete_song(song_id):
     result = song_repo.delete_song(song_id)
     if result:

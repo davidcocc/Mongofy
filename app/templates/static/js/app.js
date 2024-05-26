@@ -216,6 +216,7 @@ angular.module('mongofyApp', [])
             $scope.songAttributes.Speechiness = song.speechiness;
             $scope.songAttributes.Instrumentalità = song.instrumentalness;
             $scope.songAttributes.Valenza = song.valence;
+            $scope.selectedSongid = song._id;
             $scope.isModalOpen = true;
         };
     
@@ -244,6 +245,19 @@ angular.module('mongofyApp', [])
     
         $scope.deleteSong = function(song) {
             console.log("Delete song", song);
+            $http.post('/delete_song/' + song._id)
+            .then(function(response) {
+                if (response.data.status === 'success') {
+                    console.log('Song deleted successfully!');
+                    window.location.reload()
+                } else {
+                    console.error('Failed to delete song: ' + response.data.message);
+                }
+            })
+            .catch(function(error) {
+                // Gestisci gli errori
+                console.error('Error deleting song:', error);
+            });
         };
     
         $scope.editSong = function(song) {
