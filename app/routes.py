@@ -61,12 +61,21 @@ def like_song():
 
 @app_bp.route('/play_song', methods=['POST'])
 def play_song():
-    data = request.json
-    song_id = data.get('song_id')
-    if song_id:
-        # Qui si potrebbe riprodurre un estratto usando un web player o un'API di terze parti.
-        return jsonify({'status': 'success', 'message': 'Playing song preview!'}), 200
-    return jsonify({'status': 'error', 'message': 'Song ID is required'}), 400
+    song_id = request.json.get('song_id')
+    if not song_id:
+        return jsonify({'status': 'error', 'message': 'No song_id provided'}), 400
+
+    try:
+        # Recupera i dettagli del brano da Spotify
+        track = sp.track(song_id)
+        preview_url = track.get('preview_url')
+        
+        if not preview_url:
+            return jsonify({'status': 'error', 'message': 'No preview available for this track'}), 404
+
+        return jsonify({'status': 'success', 'preview_url': preview_url})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 # DAVID QUESTE 3 FUNZIONI SOTTO SONO DA UTILIZZARE NELL'HTML, VEDI SE RIESCI AD INTEGRARLE
