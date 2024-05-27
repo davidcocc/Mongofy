@@ -74,11 +74,13 @@ def play_song():
 @app_bp.route('/update_song/<song_id>', methods=['PUT'])
 def update_song(song_id):
     data = request.json
+    print("Data received:", data)  # Stampa il contenuto della richiesta per debug
+
     if not data:
         return jsonify({'status': 'error', 'message': 'No update data provided'}), 400
     
     update_data = {}
-    for key in ['ArtistName', 'TrackName', 'Popularity', 'Genres', 'danceability', 'energy', 'speechiness', 'instrumentalness', 'valence', 'duration_ms', 'album_cover_url']:
+    for key in ['ArtistName', 'TrackName', 'Genres']:
         if key in data:
             update_data[key] = data[key]
     
@@ -86,8 +88,9 @@ def update_song(song_id):
         return jsonify({'status': 'success', 'message': 'Song updated successfully!'}), 200
     else:
         return jsonify({'status': 'error', 'message': 'Failed to update song or song not found'}), 400
-    
-    
+
+
+
 @app_bp.route('/delete_song/<song_id>', methods=['POST'])
 def delete_song(song_id):
     result = song_repo.delete_song(song_id)

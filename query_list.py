@@ -85,7 +85,7 @@ class SongRepository:
     
     def update_song(self, song_id, update_data):
         result = self.songs_collection.update_one(
-            {'_id': ObjectId(song_id)},
+            {'_id': song_id},
             {'$set': update_data}
         )
         return result.modified_count > 0

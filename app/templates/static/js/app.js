@@ -219,6 +219,142 @@ angular.module('mongofyApp', [])
             $scope.selectedSongid = song._id;
             $scope.isModalOpen = true;
         };
+
+        $scope.openEditor = function(song) {
+            // URL dell'endpoint Flask per l'aggiornamento della canzone
+            var updateEndpoint = '/update_song/' + song._id;
+        
+            // Apri una finestra popup solo se è consentito dal browser
+            var popup = window.open(updateEndpoint, '_blank', 'width=400,height=400');
+            if (popup) {
+                console.log('Popup opened successfully:', popup);
+                popup.onload = function() {
+                    console.log('Popup loaded successfully');
+                    // Carica il contenuto nella finestra popup
+                    popup.document.write('<html><head><title>Modifica Brano</title></head><body>');
+                    popup.document.write('<h2>Title: <input type="text" id="title" value="' + song.TrackName + '"></h2>');
+                    popup.document.write('<p>Artist: <input type="text" id="artist" value="' + song.ArtistName + '"></p>');
+                    popup.document.write('<p>Genres: <input type="text" id="genres" value="' + song.Genres + '"></p>');
+                    popup.document.write('<button id="saveButton">Save</button>');
+                    popup.document.write('</body></html>');
+        
+                    // Aggiungi un evento click al pulsante Save
+                    popup.document.getElementById('saveButton').addEventListener('click', function() {
+                        console.log('Save button clicked');
+                        // Recupera i valori aggiornati
+                        var updatedTitle = popup.document.getElementById('title').value;
+                        var updatedArtist = popup.document.getElementById('artist').value;
+                        var updatedGenres = popup.document.getElementById('genres').value;
+        
+                        console.log('Updated values:', updatedTitle, updatedArtist, updatedGenres);
+        
+                        // Costruisci il corpo della richiesta
+                        var requestData = {
+                            'TrackName': updatedTitle,
+                            'ArtistName': updatedArtist,
+                            'Genres': updatedGenres
+                        };
+        
+                        console.log('Request data:', requestData);
+        
+                        // Effettua una richiesta PUT all'endpoint Flask
+                        fetch(updateEndpoint, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestData)
+                        })
+                        .then(function(response) {
+                            return response.json();
+                        })
+                        .then(function(data) {
+                            // Gestisci la risposta
+                            console.log('Response:', data);
+                            if (data.status === 'success') {
+                                alert('Song updated successfully!');
+                                // Chiudi la finestra popup dopo l'aggiornamento
+                                popup.close();
+                            } else {
+                                alert('Failed to update song: ' + data.message);
+                            }
+                        })
+                        .catch(function(error) {
+                            console.error('Error:', error);
+                            console.log('Response:', error.response); // Output dettagliato della risposta
+                            alert('An error occurred while updating the song.');
+                        });
+                        
+                        
+                    });
+                };
+            } else {
+                alert('Please enable pop-ups for this site');
+            }
+        };
+        
+
+        $scope.addSongEditor = function(song) {
+            let popup = window.open('', '_blank', 'width=400,height=400');
+            popup.document.write('<html><head><title>Aggiungi Brano</title></head><body>');
+            popup.document.write('<h2>Title: <input type="text" id="title" value="' + song.TrackName + '"></h2>');
+            popup.document.write('<p>Artist: <input type="text" id="artist" value="' + song.ArtistName + '"></p>');
+            popup.document.write('<p>Genres: <input type="text" id="genres" value="' + song.Genres + '"></p>');
+            popup.document.write('<p>Duration: ' + song.duration_ms + ' ms</p>');
+            popup.document.write('<p>Popularity: ' + song.Popularity + '</p>');
+            popup.document.write('<p>Danceability: ' + song.danceability + '</p>');
+            popup.document.write('<p>Energy: ' + song.energy + '</p>');
+            popup.document.write('<p>Speechiness: ' + song.speechiness + '</p>');
+            popup.document.write('<p>Instrumentalness: ' + song.instrumentalness + '</p>');
+            popup.document.write('<p>Valence: ' + song.valence + '</p>');
+            popup.document.write('<button onclick="window.opener.updateSong(' + song.id + ')">Save</button>');
+            popup.document.write('</body></html>');
+        };
+
+        $scope.updateSong = function(song) {
+            // Recupera il riferimento al popup
+            let popup = window.open('', '_blank');
+        
+            // Verifica se il popup è stato correttamente aperto
+            if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+                alert('Please enable pop-ups for this site');
+                return;
+            }
+        
+            // Recupera i valori dal popup
+            let title = popup.document.getElementById('title').value;
+            let artist = popup.document.getElementById('artist').value;
+            let genres = popup.document.getElementById('genres').value;
+        
+            console.log("Title:", title);
+            console.log("Artist:", artist);
+            console.log("Genres:", genres);
+        
+            let updatedSong = {
+                ArtistName: artist,
+                TrackName: title,
+                Genres: genres
+                // Aggiungi altri campi se necessario
+            };
+        
+            // Chiudi il popup dopo aver recuperato i valori
+            popup.close();
+        
+            // Invia la richiesta di aggiornamento al backend
+            $http.put('/update_song/' + song._id, updatedSong)
+                .then(function(response) {
+                    if (response.data.status === 'success') {
+                        alert('Song updated successfully');
+                    } else {
+                        console.error('Failed to update song: ' + response.data.message);
+                    }
+                }).catch(function(error) {
+                    // Gestisci gli errori
+                    console.error('Error updating song:', error);
+                });
+        };
+        
+        
     
         $scope.closeModal = function() {
             $scope.isModalOpen = false;
@@ -241,6 +377,19 @@ angular.module('mongofyApp', [])
     
         $scope.openMenu = function() {
             console.log("Query menu");
+            $http.post('/update_song/' + song._id)
+            .then(function(response) {
+                if (response.data.status === 'success') {
+                    console.log('Song updated successfully!');
+                    window.location.reload()
+                } else {
+                    console.error('Failed to update song: ' + response.data.message);
+                }
+            })
+            .catch(function(error) {
+                // Gestisci gli errori
+                console.error('Error updating song:', error);
+            });
         };
     
         $scope.deleteSong = function(song) {
@@ -258,10 +407,6 @@ angular.module('mongofyApp', [])
                 // Gestisci gli errori
                 console.error('Error deleting song:', error);
             });
-        };
-    
-        $scope.editSong = function(song) {
-            console.log("Edit song", song);
         };
 
         $scope.likeSong = function(song) {

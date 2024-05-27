@@ -29,7 +29,7 @@
     </header>
     <main>
         <div class="flex justify-end mb-4">
-            <button ng-click="addNew()" class="btn text-white p-2 rounded bg-green-500 mr-2">
+            <button ng-click="addSongEditor()" class="btn text-white p-2 rounded bg-green-500 mr-2">
                 <i class="fa fa-plus"></i>
             </button>
             <div class="relative">
@@ -193,11 +193,11 @@
                 <button class="btn btn-heart" ng-click="likeSong(selectedSong)"><i class="fa fa-heart"></i></button>
                 <button class="btn btn-play" ng-click="playSong(selectedSong)"><i class="fa fa-play"></i></button>
                 <button class="btn btn-trash" ng-click="deleteSong(selectedSong)"><i class="fa fa-trash"></i></button>
-                <button class="btn btn-edit" ng-click="editSong(selectedSong)"><i class="fa fa-edit"></i></button>
+                <button class="btn btn-edit" ng-click="openEditor(selectedSong)"><i class="fa fa-edit"></i></button>
             </div>
         </div>
     </div>
-    
+
     
 </body>
 </html>
