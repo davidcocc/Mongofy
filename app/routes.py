@@ -1,6 +1,7 @@
 from flask import render_template, jsonify, Blueprint, request
 from pymongo import MongoClient
 from bson import ObjectId
+import uuid
 from mongoConnection import database_connection
 from query_list import MongoDBClient, SongRepository
 from spotipy import SpotifyOAuth, Spotify
@@ -107,22 +108,26 @@ def delete_song(song_id):
         return jsonify({'status': 'success', 'message': 'Song deleted successfully!'}), 200
     else:
         return jsonify({'status': 'error', 'message': 'Failed to delete song or song not found'}), 400
-
-@app_bp.route('/add_song', methods=['POST'])
-def add_song():
-    data = request.json
-    if data:
-        inserted_id = song_repo.insert_song(data)
-        if inserted_id:
-            return jsonify({'status': 'success', 'message': 'Song added successfully!', 'inserted_id': str(inserted_id)}), 200
-        else:
-            return jsonify({'status': 'error', 'message': 'Failed to add song'}), 500
-    else:
-        return jsonify({'status': 'error', 'message': 'No data provided'}), 400
     
 
+@app_bp.route('/insert_song', methods=['POST'])
+def add_song():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'status': 'error', 'message': 'No data provided'}), 400
 
+        # Usa l'ID fornito dal client o genera uno nuovo se non è presente
+        if '_id' not in data:
+            data['_id'] = str(uuid.uuid4())
 
+        inserted_id = song_repo.insert_song(data)
+        if inserted_id:
+            return jsonify({'status': 'success', 'message': 'Song added successfully!', 'inserted_id': str(data['_id'])}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'Failed to add song'}), 500
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app_bp.route('/api/songs')
 def get_songs():

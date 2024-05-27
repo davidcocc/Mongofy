@@ -1,7 +1,5 @@
 angular.module('mongofyApp', [])
 
-
-
     .controller('MainController', ['$scope', '$http', '$document', function($scope, $http, $document) {
         $scope.darkMode = false;
         $scope.currentPage = 0;
@@ -220,6 +218,144 @@ angular.module('mongofyApp', [])
             $scope.isModalOpen = true;
         };
 
+        $scope.addSongEditor = function() {
+            var addEndpoint = '/insert_song';  // Assicurati che l'URL sia corretto e non contenga la barra finale
+            var popup = window.open('', '_blank', 'width=400,height=400');
+            if (popup) {
+                console.log('Popup opened successfully:', popup);
+                popup.document.write('<html><head><title>Aggiungi Brano</title></head><body>');
+                popup.document.write('<h2>Title: <input type="text" id="title"></h2>');
+                popup.document.write('<p>Artist: <input type="text" id="artist"></p>');
+                popup.document.write('<button id="addButton">Add</button>');
+                popup.document.write('</body></html>');
+                
+                popup.document.close();  // Ensure the document is fully loaded
+        
+                popup.onload = function() {
+                    console.log('Popup loaded successfully');
+        
+                    popup.document.getElementById('addButton').addEventListener('click', function() {
+                        console.log('Add button clicked');
+                        var toAddId = (Math.random() + 1).toString(36).substring(7);
+                        var toAddTitle = popup.document.getElementById('title').value;
+                        var toAddArtist = popup.document.getElementById('artist').value;
+                        var toAddDuration = 3.0;
+                        var toAddPopularity = 50;
+                        var toAddDanceability = 0.5;
+                        var toAddEnergy = 0.5;
+                        var toAddSpeechiness= 0.5;
+                        var toAddInstrumentality = 0.5;
+                        var toAddValence = 0.5;
+        
+                        console.log('Added values:', toAddTitle, toAddArtist, toAddDuration, toAddPopularity, toAddDanceability, toAddEnergy, toAddSpeechiness, toAddInstrumentality, toAddValence);
+        
+                        var requestData = {
+                            'TrackName': toAddTitle,
+                            'ArtistName': toAddArtist,
+                            'Duration': toAddDuration,
+                            'Popularity': toAddPopularity,
+                            'Danceability': toAddDanceability,
+                            'Energy': toAddEnergy,
+                            'Speechiness': toAddSpeechiness,
+                            'Instrumentality': toAddInstrumentality,
+                            'Valence': toAddValence
+                        };
+        
+                        console.log('Request data:', requestData);
+        
+                        fetch(addEndpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestData)
+                        })
+                        .then(function(response) {
+                            return response.text().then(function(text) {
+                                console.log('Response text:', text);
+                                try {
+                                    return JSON.parse(text);
+                                } catch (e) {
+                                    throw new Error('Invalid JSON: ' + text);
+                                }
+                            });
+                        })
+                        .then(function(data) {
+                            console.log('Response data:', data);
+                            if (data.status === 'success') {
+                                alert('Song added successfully!');
+                                popup.close();
+                            } else {
+                                alert('Failed to add song: ' + data.message);
+                            }
+                        })
+                        .catch(function(error) {
+                            console.error('Error:', error);
+                            alert('An error occurred while adding the song.');
+                        });
+                    });
+                };
+            } else {
+                alert('Please enable pop-ups for this site');
+            }
+        };
+        
+        $scope.addSong = function() {
+            let popup = window.open('', '_blank');
+        
+            // Verifica se il popup è stato correttamente aperto
+            if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+                alert('Please enable pop-ups for this site');
+                return;
+            }
+        
+            // Recupera i valori dal popup
+            let _id = toAddId;
+            let title = popup.document.getElementById('title').value;
+            let artist = popup.document.getElementById('artist').value;
+            let toAddDuration = '3.0';
+            let toAddPopularity = '50';
+            let toAddDanceability = '0.5';
+            let toAddEnergy = '0.5';
+            let toAddSpeechiness= '0.5';
+            let toAddInstrumentality = '0.5';
+            let toAddValence = '0.5';
+        
+            console.log("_id: ", _id)
+            console.log("Title:", title);
+            console.log("Artist:", artist);
+        
+            let toAddSong = {
+                _id: _id,
+                ArtistName: artist,
+                TrackName: title,
+                Duration: toAddDuration,
+                Popularity: toAddPopularity,
+                Danceability: toAddDanceability,
+                Energy: toAddEnergy,
+                Speechiness: toAddSpeechiness,
+                Instrumentality: toAddInstrumentality,
+                Valence: toAddValence
+                // Aggiungi altri campi se necessario
+            };
+        
+            // Chiudi il popup dopo aver recuperato i valori
+            popup.close();
+        
+            // Invia la richiesta di aggiornamento al backend
+            $http.post('/add_song/' + toAddSong)
+                .then(function(response) {
+                    if (response.data.status === 'success') {
+                        alert('Song added successfully');
+                    } else {
+                        console.error('Failed to add song: ' + response.data.message);
+                    }
+                }).catch(function(error) {
+                    // Gestisci gli errori
+                    console.error('Error adding song:', error);
+                });
+        };
+
         $scope.openEditor = function(song) {
             // URL dell'endpoint Flask per l'aggiornamento della canzone
             var updateEndpoint = '/update_song/' + song._id;
@@ -289,24 +425,7 @@ angular.module('mongofyApp', [])
                 alert('Please enable pop-ups for this site');
             }
         };
-        
 
-        $scope.addSongEditor = function(song) {
-            let popup = window.open('', '_blank', 'width=400,height=400');
-            popup.document.write('<html><head><title>Aggiungi Brano</title></head><body>');
-            popup.document.write('<h2>Title: <input type="text" id="title" value="' + song.TrackName + '"></h2>');
-            popup.document.write('<p>Artist: <input type="text" id="artist" value="' + song.ArtistName + '"></p>');
-            popup.document.write('<p>Genres: <input type="text" id="genres" value="' + song.Genres + '"></p>');
-            popup.document.write('<p>Duration: ' + song.duration_ms + ' ms</p>');
-            popup.document.write('<p>Popularity: ' + song.Popularity + '</p>');
-            popup.document.write('<p>Danceability: ' + song.danceability + '</p>');
-            popup.document.write('<p>Energy: ' + song.energy + '</p>');
-            popup.document.write('<p>Speechiness: ' + song.speechiness + '</p>');
-            popup.document.write('<p>Instrumentalness: ' + song.instrumentalness + '</p>');
-            popup.document.write('<p>Valence: ' + song.valence + '</p>');
-            popup.document.write('<button onclick="window.opener.updateSong(' + song.id + ')">Save</button>');
-            popup.document.write('</body></html>');
-        };
 
         $scope.updateSong = function(song) {
             // Recupera il riferimento al popup
@@ -321,16 +440,13 @@ angular.module('mongofyApp', [])
             // Recupera i valori dal popup
             let title = popup.document.getElementById('title').value;
             let artist = popup.document.getElementById('artist').value;
-            let genres = popup.document.getElementById('genres').value;
         
             console.log("Title:", title);
             console.log("Artist:", artist);
-            console.log("Genres:", genres);
         
             let updatedSong = {
                 ArtistName: artist,
                 TrackName: title,
-                Genres: genres
                 // Aggiungi altri campi se necessario
             };
         
