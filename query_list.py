@@ -36,51 +36,65 @@ class SongRepository:
     
     
     def find_songs_by_danceability_morethan(self):
-        return list(self.songs_collection.find({"danceability": {"$gt": 0.70}}))
+        return list(self.songs_collection.find({"danceability": {"$gt": 0.70}}).limit(10))
     
     def find_songs_by_danceability_lessthan(self):
-        return list(self.songs_collection.find({"danceability": {"$lt": 0.30}}))
+        return list(self.songs_collection.find({"danceability": {"$lt": 0.30}}).limit(10))
     
     
     def find_songs_by_popularity_morethan(self):
-        return list(self.songs_collection.find({"Popularity": {"$gt": 0.70}}))
+        return list(self.songs_collection.find({"Popularity": {"$gt": 70}}).limit(10))
     
     def find_songs_by_popularity_lessthan(self):
-        return list(self.songs_collection.find({"Popularity": {"$lt": 0.30}}))
+        return list(self.songs_collection.find({"Popularity": {"$lt": 30}}).limit(10))
     
     
     def find_songs_by_energy_morethan(self):
-        return list(self.songs_collection.find({"energy": {"$gt": 0.70}}))
+        return list(self.songs_collection.find({"energy": {"$gt": 0.70}}).limit(10))
     
     def find_songs_by_energy_lessthan(self):
-        return list(self.songs_collection.find({"energy": {"$lt": 0.30}}))
+        return list(self.songs_collection.find({"energy": {"$lt": 0.30}}).limit(10))
     
     def find_songs_by_speechiness_morethan(self):
-        return list(self.songs_collection.find({"speechiness": {"$gt": 0.70}}))
+        return list(self.songs_collection.find({"speechiness": {"$gt": 0.70}}).limit(10))
     
     def find_songs_by_speechiness_lessthan(self):
-        return list(self.songs_collection.find({"speechiness": {"$lt": 0.30}}))
+        return list(self.songs_collection.find({"speechiness": {"$lt": 0.30}}).limit(10))
     
     def find_songs_by_instrumentalness_morethan(self):
-        return list(self.songs_collection.find({"instrumentalness": {"$gt": 0.70}}))
+        return list(self.songs_collection.find({"instrumentalness": {"$gt": 0.70}}).limit(10))
     
     def find_songs_by_instrumentalness_lessthan(self):
-        return list(self.songs_collection.find({"instrumentalness": {"$lt": 0.30}}))
+        return list(self.songs_collection.find({"instrumentalness": {"$lt": 0.30}}).limit(10))
     
     def find_songs_by_valence_morethan(self):
-        return list(self.songs_collection.find({"valence": {"$gt": 0.70}}))
+        return list(self.songs_collection.find({"valence": {"$gt": 0.70}}).limit(10))
     
     def find_songs_by_valence_lessthan(self):
-        return list(self.songs_collection.find({"valence": {"$lt": 0.30}}))
+        return list(self.songs_collection.find({"valence": {"$lt": 0.30}}).limit(10))
     
     def find_Speranza(self):
         return list(self.songs_collection.find({"ArtistName": "Speranza", "valence": {"$gt": 0.50}}))
     
     def find_songs_by_genre_italian(self):
-        matching_genres = self.genres_collection.find({"genre": {"$regex": "italian", "$options": "i"}, "instrumentalness": {"$gt": 0.40}})
+        matching_genres = self.genres_collection.find({"genre": {"$regex": "italian", "$options": "i"}})
         genre_ids = [genre['_id'] for genre in matching_genres]
         if genre_ids:
-            return list(self.songs_collection.find({"Genres": {"$in": genre_ids}}))
+            return list(self.songs_collection.find({"Genres": {"$in": genre_ids}, "instrumentalness": {"$gt": 0.70}}).limit(10))
+        return []
+    
+    def find_songs_by_genre_pop(self):
+        matching_genres = self.genres_collection.find({"genre": {"$regex": "pop", "$options": "i"}})
+        genre_ids = [genre['_id'] for genre in matching_genres]
+        if genre_ids:
+            return list(self.songs_collection.find({"Genres": {"$in": genre_ids}, "Popularity": {"$gt": 75}}).limit(10))
+        return []
+    
+    def find_songs_by_genre_rock(self):
+        matching_genres = self.genres_collection.find({"genre": {"$regex": "rock", "$options": "i"}})
+        genre_ids = [genre['_id'] for genre in matching_genres]
+        if genre_ids:
+            return list(self.songs_collection.find({"Genres": {"$in": genre_ids}, "danceability": {"$lt": 0.30}}).limit(10))
         return []
     
     def update_song(self, song_id, update_data):

@@ -295,6 +295,26 @@ def get_italian_songs():
 
 
 
+@app_bp.route('/api/songs/find_pop', methods=['GET'])
+def get_pop_songs():
+    songs = song_repo.find_songs_by_genre_pop()
+    
+    for song in songs:
+        song = convert_objectid_to_str(song)
+    return jsonify(list(songs))
+
+
+
+@app_bp.route('/api/songs/find_rock', methods=['GET'])
+def get_rock_songs():
+    songs = song_repo.find_songs_by_genre_rock()
+    
+    for song in songs:
+        song = convert_objectid_to_str(song)
+    return jsonify(list(songs))
+
+
+
 
 
 

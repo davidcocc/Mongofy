@@ -84,6 +84,12 @@ angular.module('mongofyApp', [])
                 case 'italian':
                     queryUrl = '/api/songs/find_italian'
                     break;
+                case 'pop':
+                    queryUrl = '/api/songs/find_pop'
+                    break;
+                case 'rock':
+                    queryUrl = '/api/songs/find_rock'
+                    break;
                 default:
                     return;
             }
