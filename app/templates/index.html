@@ -192,12 +192,16 @@
             <div class="modal-buttons">
                 <button class="btn btn-heart" ng-click="likeSong(selectedSong)"><i class="fa fa-heart"></i></button>
                 <button class="btn btn-play" ng-click="playSong(selectedSong)"><i class="fa fa-play"></i></button>
+                <button class="btn btn-stop" ng-click="stopSong()"><i class="fa fa-stop"></i></button>
                 <button class="btn btn-trash" ng-click="deleteSong(selectedSong)"><i class="fa fa-trash"></i></button>
                 <button class="btn btn-edit" ng-click="openEditor(selectedSong)"><i class="fa fa-edit"></i></button>
             </div>
         </div>
     </div>
 
+    
+    <audio id="audioPlayer" style="display: none;"></audio>
+    
     
 </body>
 </html>

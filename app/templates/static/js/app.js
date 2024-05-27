@@ -426,13 +426,23 @@ angular.module('mongofyApp', [])
             $http.post('/play_song', { song_id: song._id })
                 .then(function(response) {
                     if (response.data.status === 'success') {
-                        alert('Playing song preview!');
+                        const audioPlayer = document.getElementById('audioPlayer');
+                        audioPlayer.src = response.data.preview_url;
+                        audioPlayer.style.display = 'block';
+                        audioPlayer.play();
                     } else {
                         alert('Error playing song: ' + response.data.message);
                     }
                 }, function(error) {
                     alert('Error playing song: ' + error.data.message);
                 });
+        };
+
+        $scope.stopSong = function() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            audioPlayer.style.display = 'none';
         };
 
 
