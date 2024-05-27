@@ -41,9 +41,6 @@ def convert_objectid_to_str(document):
     return document
 
 
-
-
-
 @app_bp.route('/')
 def index():
     database_connection()
