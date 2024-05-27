@@ -89,7 +89,7 @@ def update_song(song_id):
         return jsonify({'status': 'error', 'message': 'No update data provided'}), 400
     
     update_data = {}
-    for key in ['ArtistName', 'TrackName', 'Genres']:
+    for key in ['ArtistName', 'TrackName']:
         if key in data:
             update_data[key] = data[key]
     

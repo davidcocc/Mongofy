@@ -234,7 +234,6 @@ angular.module('mongofyApp', [])
                     popup.document.write('<html><head><title>Modifica Brano</title></head><body>');
                     popup.document.write('<h2>Title: <input type="text" id="title" value="' + song.TrackName + '"></h2>');
                     popup.document.write('<p>Artist: <input type="text" id="artist" value="' + song.ArtistName + '"></p>');
-                    popup.document.write('<p>Genres: <input type="text" id="genres" value="' + song.Genres + '"></p>');
                     popup.document.write('<button id="saveButton">Save</button>');
                     popup.document.write('</body></html>');
         
@@ -244,15 +243,13 @@ angular.module('mongofyApp', [])
                         // Recupera i valori aggiornati
                         var updatedTitle = popup.document.getElementById('title').value;
                         var updatedArtist = popup.document.getElementById('artist').value;
-                        var updatedGenres = popup.document.getElementById('genres').value;
         
-                        console.log('Updated values:', updatedTitle, updatedArtist, updatedGenres);
+                        console.log('Updated values:', updatedTitle, updatedArtist);
         
                         // Costruisci il corpo della richiesta
                         var requestData = {
                             'TrackName': updatedTitle,
-                            'ArtistName': updatedArtist,
-                            'Genres': updatedGenres
+                            'ArtistName': updatedArtist
                         };
         
                         console.log('Request data:', requestData);
