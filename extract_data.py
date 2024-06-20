@@ -13,7 +13,7 @@ sp = Spotify(auth_manager=SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
                                        redirect_uri=SPOTIPY_REDIRECT_URI,
                                        scope=SCOPE))
 
-# Leggere il file CSV
+
 csv_file_path = 'musicData.csv'
 df = pd.read_csv(csv_file_path)
 
@@ -25,14 +25,11 @@ def get_album_cover_url(track_id):
         return album_cover_url
     return None
 
-# Assicurarsi che ci sia una colonna 'SpotifyTrackID' nel CSV
 if '_id' not in df.columns:
     raise ValueError("Il file CSV deve contenere una colonna 'SpotifyTrackID' con gli ID delle tracce Spotify.")
 
-# Aggiungere una nuova colonna per l'URL della copertina dell'album
 df['album_cover_url'] = df['_id'].apply(get_album_cover_url)
 
-# Salvare il DataFrame aggiornato in un nuovo file CSV
 df.to_csv('musicData_with_covers.csv', index=False)
 print("Album covers have been added to the CSV file!")
 

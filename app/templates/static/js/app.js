@@ -32,7 +32,7 @@ angular.module('mongofyApp', [])
         };
 
 
-        // Menu visibility
+        
         $scope.menuVisible = false;
 
         $scope.toggleMenu = function() {
@@ -102,7 +102,7 @@ angular.module('mongofyApp', [])
         };
     
 
-        // Funzione per caricare i generi e mapparli ai brani
+        
         function loadGenres() {
             $http.get('/api/genres').then(function(response) {
                 $scope.genres = response.data;
@@ -110,7 +110,7 @@ angular.module('mongofyApp', [])
             });
         }
 
-        // Funzione per mappare i generi ai brani
+        
         function mapGenresToSongs() {
             $scope.songs.forEach(function(song) {
                 song.Genres = song.Genres.map(function(genreId) {
@@ -128,7 +128,7 @@ angular.module('mongofyApp', [])
             }
         };
 
-        // Funzione per cercare i brani
+        
         $scope.searchSongs = function() {
             let searchUrl;
             if ($scope.searchType === 'genre') {
@@ -144,7 +144,7 @@ angular.module('mongofyApp', [])
             });
         };
 
-        // Caricamento iniziale dei brani e dei generi
+        
         $http.get('/api/songs').then(function(response) {
             $scope.songs = response.data;
             loadGenres();
@@ -159,7 +159,7 @@ angular.module('mongofyApp', [])
             }
         };
 
-        // Funzione per ordinare la colonna
+        
         $scope.sortColumn = function(column) {
             if ($scope.currentSort === column) {
                 $scope.reverseSort = !$scope.reverseSort;
@@ -225,7 +225,7 @@ angular.module('mongofyApp', [])
         };
 
         $scope.addSongEditor = function() {
-            var addEndpoint = '/insert_song';  // Assicurati che l'URL sia corretto e non contenga la barra finale
+            var addEndpoint = '/insert_song'; 
             var popup = window.open('', '_blank', 'width=400,height=400');
             if (popup) {
                 console.log('Popup opened successfully:', popup);
@@ -235,7 +235,7 @@ angular.module('mongofyApp', [])
                 popup.document.write('<button id="addButton">Add</button>');
                 popup.document.write('</body></html>');
                 
-                popup.document.close();  // Ensure the document is fully loaded
+                popup.document.close();  
         
                 popup.onload = function() {
                     console.log('Popup loaded successfully');
@@ -309,13 +309,13 @@ angular.module('mongofyApp', [])
         $scope.addSong = function() {
             let popup = window.open('', '_blank');
         
-            // Verifica se il popup è stato correttamente aperto
+            
             if (!popup || popup.closed || typeof popup.closed == 'undefined') {
                 alert('Please enable pop-ups for this site');
                 return;
             }
         
-            // Recupera i valori dal popup
+            
             let _id = toAddId;
             let title = popup.document.getElementById('title').value;
             let artist = popup.document.getElementById('artist').value;
@@ -342,13 +342,13 @@ angular.module('mongofyApp', [])
                 Speechiness: toAddSpeechiness,
                 Instrumentality: toAddInstrumentality,
                 Valence: toAddValence
-                // Aggiungi altri campi se necessario
+                
             };
         
-            // Chiudi il popup dopo aver recuperato i valori
+            
             popup.close();
         
-            // Invia la richiesta di aggiornamento al backend
+            
             $http.post('/add_song/' + toAddSong)
                 .then(function(response) {
                     if (response.data.status === 'success') {
@@ -357,29 +357,27 @@ angular.module('mongofyApp', [])
                         console.error('Failed to add song: ' + response.data.message);
                     }
                 }).catch(function(error) {
-                    // Gestisci gli errori
+                    
                     console.error('Error adding song:', error);
                 });
         };
 
         $scope.openEditor = function(song) {
-            // URL dell'endpoint Flask per l'aggiornamento della canzone
+            
             var updateEndpoint = '/update_song/' + song._id;
         
-            // Apri una finestra popup solo se è consentito dal browser
+            
             var popup = window.open(updateEndpoint, '_blank', 'width=400,height=400');
             if (popup) {
                 console.log('Popup opened successfully:', popup);
                 popup.onload = function() {
                     console.log('Popup loaded successfully');
-                    // Carica il contenuto nella finestra popup
                     popup.document.write('<html><head><title>Modifica Brano</title></head><body>');
                     popup.document.write('<h2>Title: <input type="text" id="title" value="' + song.TrackName + '"></h2>');
                     popup.document.write('<p>Artist: <input type="text" id="artist" value="' + song.ArtistName + '"></p>');
                     popup.document.write('<button id="saveButton">Save</button>');
                     popup.document.write('</body></html>');
         
-                    // Aggiungi un evento click al pulsante Save
                     popup.document.getElementById('saveButton').addEventListener('click', function() {
                         console.log('Save button clicked');
                         // Recupera i valori aggiornati
@@ -396,7 +394,6 @@ angular.module('mongofyApp', [])
         
                         console.log('Request data:', requestData);
         
-                        // Effettua una richiesta PUT all'endpoint Flask
                         fetch(updateEndpoint, {
                             method: 'PUT',
                             headers: {
@@ -408,11 +405,9 @@ angular.module('mongofyApp', [])
                             return response.json();
                         })
                         .then(function(data) {
-                            // Gestisci la risposta
                             console.log('Response:', data);
                             if (data.status === 'success') {
                                 alert('Song updated successfully!');
-                                // Chiudi la finestra popup dopo l'aggiornamento
                                 popup.close();
                             } else {
                                 alert('Failed to update song: ' + data.message);
@@ -420,7 +415,7 @@ angular.module('mongofyApp', [])
                         })
                         .catch(function(error) {
                             console.error('Error:', error);
-                            console.log('Response:', error.response); // Output dettagliato della risposta
+                            console.log('Response:', error.response); 
                             alert('An error occurred while updating the song.');
                         });
                         
@@ -434,16 +429,13 @@ angular.module('mongofyApp', [])
 
 
         $scope.updateSong = function(song) {
-            // Recupera il riferimento al popup
             let popup = window.open('', '_blank');
         
-            // Verifica se il popup è stato correttamente aperto
             if (!popup || popup.closed || typeof popup.closed == 'undefined') {
                 alert('Please enable pop-ups for this site');
                 return;
             }
         
-            // Recupera i valori dal popup
             let title = popup.document.getElementById('title').value;
             let artist = popup.document.getElementById('artist').value;
         
@@ -453,13 +445,10 @@ angular.module('mongofyApp', [])
             let updatedSong = {
                 ArtistName: artist,
                 TrackName: title,
-                // Aggiungi altri campi se necessario
             };
         
-            // Chiudi il popup dopo aver recuperato i valori
             popup.close();
         
-            // Invia la richiesta di aggiornamento al backend
             $http.put('/update_song/' + song._id, updatedSong)
                 .then(function(response) {
                     if (response.data.status === 'success') {
@@ -468,7 +457,6 @@ angular.module('mongofyApp', [])
                         console.error('Failed to update song: ' + response.data.message);
                     }
                 }).catch(function(error) {
-                    // Gestisci gli errori
                     console.error('Error updating song:', error);
                 });
         };
@@ -481,7 +469,6 @@ angular.module('mongofyApp', [])
     
         $scope.toggleFavorite = function(song) {
             song.isFavorite = !song.isFavorite;
-            // Aggiungi logica per gestire i preferiti (salvare nel database, ecc.)
         };
     
         $scope.formatDuration = function(duration_ms) {
@@ -506,7 +493,6 @@ angular.module('mongofyApp', [])
                 }
             })
             .catch(function(error) {
-                // Gestisci gli errori
                 console.error('Error updating song:', error);
             });
         };

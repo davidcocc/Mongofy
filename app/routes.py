@@ -8,7 +8,6 @@ from spotipy import SpotifyOAuth, Spotify
 
 app_bp = Blueprint('app', __name__)
 
-# Connessione a MongoDB usando il database 'Mongofy'
 client = MongoClient('mongodb://localhost:27017/')
 db = client.Mongofy
 
@@ -76,12 +75,11 @@ def play_song():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
-# DAVID QUESTE 3 FUNZIONI SOTTO SONO DA UTILIZZARE NELL'HTML, VEDI SE RIESCI AD INTEGRARLE
+
 
 @app_bp.route('/update_song/<song_id>', methods=['PUT'])
 def update_song(song_id):
-    data = request.json
-    print("Data received:", data)  # Stampa il contenuto della richiesta per debug
+    data = request.json  
 
     if not data:
         return jsonify({'status': 'error', 'message': 'No update data provided'}), 400
